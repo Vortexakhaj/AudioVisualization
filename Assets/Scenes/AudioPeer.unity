@@ -1065,7 +1065,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcffe3df477d7b74bb5813b4a5d1eab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _audioClip: {fileID: 8300000, guid: 086caf06f5271504bbd8391a4ab62402, type: 3}
+  isMic: 0
+  _selectedMic: 
+  _microphoneGroup: {fileID: -3028590533181766211, guid: 181857122d825984eacb541ffa3b6b37, type: 2}
+  _masterGroup: {fileID: 24300002, guid: 181857122d825984eacb541ffa3b6b37, type: 2}
   _audioProfile: 5
+  _channel: 0
 --- !u!82 &2042882422
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1078,7 +1084,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 086caf06f5271504bbd8391a4ab62402, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.309
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0

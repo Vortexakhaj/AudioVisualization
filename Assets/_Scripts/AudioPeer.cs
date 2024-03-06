@@ -2,11 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(AudioSource))]
 public class AudioPeer : MonoBehaviour
 {
     AudioSource _audio;
+    public AudioClip _audioClip;
+
+    //Microphone
+    public bool isMic;
+    public string _selectedMic;
+    public AudioMixerGroup _microphoneGroup, _masterGroup;
+
+    //FFT Values
     float[] _samplesLeft = new float[512];
     float[] _samplesRight = new float[512];
 
@@ -20,24 +29,24 @@ public class AudioPeer : MonoBehaviour
     float[] _bufferDecrease64 = new float[64];
     float[] _freqBandHighest64 = new float[64];
 
+    //Audio Band Values
     public static float[] _audioBand = new float[8];
     public static float[] _audioBandBuffer = new float[8];
     public static float[] _audioBand64 = new float[64];
     public static float[] _audioBandBuffer64 = new float[64];
 
 
-    //Single value to unify All band
+    //Single value to unify All band - Amplitude
     public static float _amplitude, _amplitudeBuffer;
     float _amplitudeHighest;
-    
+
     public static float _amplitude64, _amplitudeBuffer64;
     float _amplitudeHighest64;
+
     public float _audioProfile; //to fix freqband staring with 0;
 
-    public enum Channel
-    {
-        Stereo, Left, Right
-    };
+    //Stereo Switch
+    public enum Channel { Stereo, Left, Right };
     public Channel _channel = new Channel();
 
     // Start is called before the first frame update
@@ -45,6 +54,33 @@ public class AudioPeer : MonoBehaviour
     {
         _audio = GetComponent<AudioSource>();
         AudioProfile(_audioProfile);
+
+        //Initialize Mic
+        if (!isMic)
+        {
+            _audio.outputAudioMixerGroup = _masterGroup;
+            _audio.clip = _audioClip;
+            _audio.Play();
+            return;
+        }
+
+        if (Microphone.devices.Length > 0)
+        {
+            StartCoroutine(StartMic());
+        }
+        else
+        {
+            isMic = false;
+        }
+    }
+
+    IEnumerator StartMic()
+    {
+        yield return new WaitForEndOfFrame();
+        _selectedMic = Microphone.devices[0].ToString();
+        _audio.outputAudioMixerGroup = _microphoneGroup;
+        _audio.clip = Microphone.Start(_selectedMic, true, 10, AudioSettings.outputSampleRate);
+        _audio.Play();
     }
 
     // Update is called once per frame
@@ -216,7 +252,7 @@ public class AudioPeer : MonoBehaviour
             }
         }
     }
-    
+
     void CreateAudioBands64()
     {
         for (int i = 0; i < _freqBandHighest64.Length; i++)
